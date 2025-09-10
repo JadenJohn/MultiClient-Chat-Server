@@ -1,37 +1,38 @@
-# Chat Server (Client - Server)
-C++ boost::asio implementation of multi-threaded chat server, and client
+# CHAT SERVER (CLIENT-SERVER)
 
-I implemented a console mode chat room using C++11 features and boost::asio asynchronous library. The chat room consists of a chat server and multiple chat clients. The makefile will generate 2 binaries, chat_server and chat_client. The boost::asio::io_service::strand is used to serialize server side event handlers in thread pool. The strand wrapper eliminates the need of explicitly synchronize and locking event handlers in thread pool.
+C++ Boost.Asio Multi-threaded Chat Server and Client
 
-The chat room can perform the following functions:
-1.	Broadcast each new chat message to all participants in the same room.
-2.	A chat message consists of server time stamp, client’s nickname, and client’s chat content text message.
-3.	When a new participant joins a room, all recent chat history will be feed to this participant.
-4.	A single server can support multiple chat rooms. Chat rooms are distinguished from each other by port numbers.
-5.	The server can be easily configured with multiple threads. Number of threads is hardcoded in the server code just for demonstration purpose. For production use, the number of worker threads need a config file entry.
-6.	For Linux system, set cpu affinity to threads in pool is also demonstrated.
-7.	Tested across Windows and Linux.
+This project implements a console-based chat application using C++11 and the Boost.Asio asynchronous networking library. It features both a chat server and multiple chat clients, communicating over TCP sockets.
 
-# example
-starts server on a home computer, with only one room listening on port 8888
->$./chat_server 8888
+FEATURES
 
-starts 3 clients on another home computer, all connect to the chat_server which is on box 192.168.1.4.
+Asynchronous Server & Client:
+Built with Boost.Asio’s async model for non-blocking communication.
 
-first starts client Botao:
->$./chat_client Botao 192.168.1.4 8888
+Thread Pool with Strand:
+The server uses a thread pool with boost::asio::io_service::strand (or boost::asio::strand in newer versions) to ensure serialized handler execution. This removes the need for manual synchronization like mutexes or locks in the server’s thread pool.
 
-After a few typing messages, starts client Tom:
->$./chat_client Tom 192.168.1.4 8888
+Broadcast Messaging:
+Each message sent by a client is broadcast to all clients connected to the same chat room.
 
-Finally starts client Mike:
->$./chat_client Mike 192.168.1.4 8888
+Message Format:
 
-The type in message and console history is like this:
-![image](https://github.com/botaojia/chat/blob/master/example.png)
+->Messages include:
+->Server timestamp
+->Sender's nickname
+->Message content
 
-The chat_server can support multiple room like this:
->$./chat_server 8888 9999
+Chat History:
+When a new client joins, the server sends them the recent chat history from the room they joined.
 
-now clients can select which room to join based on port numbers.
+Multi-room Support:
+A single server can host multiple chat rooms, each identified by a different port number.
 
+Thread Configuration:
+The number of worker threads is currently hardcoded for demo purposes. In production, it should be loaded from a configuration file.
+
+CPU Affinity on Linux:
+Demonstrates how to bind threads to specific CPU cores for performance tuning.
+
+Cross-Platform:
+Tested on both Windows and Linux environments.
